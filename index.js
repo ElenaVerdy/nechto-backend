@@ -5,15 +5,27 @@ const port = process.env.PORT || 8000
 const server = app.listen(port, () => console.log(`Listening on port ${port}!`))
 const { Client } = require('pg')
 const sql = require('./sql.js')
+const addRatingChange = require('./addRatingChange.js')
+const path = require('path')
+
+app.use(express.static(path.join(__dirname, 'nechto-frontend', 'build')));
+
+app.get('/', function (req, res) {
+  res.sendFile(path.join(__dirname + 'nechto-frontend/index.html'));
+});
 
 const getPgClient = async () => {
-    const client = new Client({
-        user: 'postgres',
-        host: 'localhost',
-        database: 'nechto',
-        password: 'postgres',
-        port: 5432,
-    })
+    const pgConfig = {
+        connectionString: process.env.DATABASE_URL || 'postgres://postgres:postgres@localhost:5432/nechto',
+    }
+    
+    if (process.env.DATABASE_URL) {
+        pgConfig.ssl = {
+            rejectUnauthorized: false
+        }
+    }
+
+    const client = new Client(pgConfig)
 
     await client.connect()
 
@@ -31,7 +43,7 @@ app.use(function(req, res, next) {
     next()
 })
 
-app.get('/users', async (req, res) => {
+app.get('/api/users', async (req, res) => {
     try {
         const client = await getPgClient()
         const response = await client.query('SELECT * from users order by rating desc')
@@ -45,13 +57,11 @@ app.get('/users', async (req, res) => {
     }
 })
 
-app.post('/new-game', async (req, res) => {
+app.post('/api/new-game', async (req, res) => {
     try {
         const client = await getPgClient()
 
-        req.body.forEach(element => {
-            element.ratingChange = (Math.random() * 15 - 7) ^ 0
-        });
+        addRatingChange(req.body)
 
         const query = sql.createGame(req.body)
 
@@ -62,6 +72,6 @@ app.post('/new-game', async (req, res) => {
     } catch (err) {
         logger.error(err)
 
-        res.send([])
+        res.sendStatus(500)
     }
 })

@@ -34,12 +34,4 @@ CREATE TABLE gameplayers (
     isalive             boolean
 );
 
-CREATE TABLE recordstwoplayers (
-    gameid                  serial primary key,
-    timems                  integer NOT NULL,
-    created_at              TIMESTAMPTZ DEFAULT Now(),
-    player1username        	varchar(50) references users(username) NOT NULL,
-    player2username        	varchar(50) references users(username) NOT NULL    
-);
-
 ttsCommit;
