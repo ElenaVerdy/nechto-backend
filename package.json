@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npm run update-frontend && node index.js",
+    "start": "node index.js",
     "update-frontend": "git clone https://github.com/ElenaVerdy/nechto-frontend.git && cd nechto-frontend && npm i && npm run build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

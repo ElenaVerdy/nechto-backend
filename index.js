@@ -8,10 +8,10 @@ const sql = require('./sql.js')
 const addRatingChange = require('./addRatingChange.js')
 const path = require('path')
 
-app.use(express.static(path.join(__dirname, 'nechto-frontend', 'build')));
+app.use(express.static(path.join(__dirname, 'frontend', 'build')));
 
 app.get('/', function (req, res) {
-  res.sendFile(path.join(__dirname + 'nechto-frontend/index.html'));
+  res.sendFile(path.join(__dirname + 'frontend', 'build', 'index.html'));
 });
 
 const getPgClient = async () => {
